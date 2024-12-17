@@ -19,19 +19,16 @@ Build_And_Push:
     - mkdir -p build_context
     - cp -r myapp/* build_context/
 
-    # Utilisation d'un tag incrémenté basé sur l'horodatage
-    - VERSION_TAG="v$(date +%s)"  # Génère un tag unique basé sur le timestamp
-    - echo "Tag de version généré : $VERSION_TAG"
-
+    - export VERSION_TAG="v$(date +%s)"
     - echo "Construction de l'image Docker..."
     - cd build_context
-    - docker build -t $IMAGE_NAME:$VERSION_TAG .
+    - docker build -t $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG .
 
     - echo "Vérification des images Docker..."
     - docker images
 
-    - echo "Poussée de l'image dans le registre GitLab..."
-    - docker push $IMAGE_NAME:$VERSION_TAG
+  - echo "Poussée de l'image dans le registre GitLab..."
+  - docker push $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG
   only:
     - main
 
