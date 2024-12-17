@@ -40,7 +40,7 @@ Build_And_Push:
     - git config --global user.email "ci-bot@example.com"
     - git config --global user.name "GitLab CI Bot"
     - git add $VERSION_FILE
-    - git commit -m "CI/CD  Increment version to $VERSION_TAG"
+    - git commit -m "CI/CD Increment version to $VERSION_TAG"
     - git push origin main
   only:
     - main
