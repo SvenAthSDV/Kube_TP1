@@ -8,6 +8,7 @@ stages:
 
 variables:
   IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp
+  VERSION_FILE: version.txt
 
 Build_And_Push:
   stage: build_and_push
@@ -15,22 +16,42 @@ Build_And_Push:
     - echo "Connexion au registre GitLab..."
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
 
+    # Vérification et incrémentation de la version
+    - echo "Gestion de la version..."
+    - |
+      if [ -f "$VERSION_FILE" ]; then
+        VERSION=$(cat $VERSION_FILE)   # Lire la version actuelle
+        NEW_VERSION=$((VERSION + 1))   # Incrémenter
+      else
+        NEW_VERSION=1                 # Initialiser si le fichier n'existe pas
+      fi
+      echo $NEW_VERSION > $VERSION_FILE
+      VERSION_TAG="v$NEW_VERSION"
+      echo "Nouvelle version : $VERSION_TAG"
+
     - echo "Création du contexte de build..."
     - mkdir -p build_context
     - cp -r myapp/* build_context/
+    - cp $VERSION_FILE build_context/  # Inclut le fichier de version dans le contexte
 
-    - export VERSION_TAG="v$(date +%s)"
     - echo "Construction de l'image Docker..."
     - cd build_context
     - docker build -t $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG .
 
-    - echo "Vérification des images Docker..."
-    - docker images
-
     - echo "Poussée de l'image dans le registre GitLab..."
     - docker push $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG
+
+    # Commit de la version mise à jour
+    - echo "Commit de la nouvelle version..."
+    - cd ..
+    - git config --global user.email "ci-bot@example.com"
+    - git config --global user.name "GitLab CI Bot"
+    - git add $VERSION_FILE
+    - git commit -m "CI/CD: Increment version to $VERSION_TAG"
+    - git push origin main
   only:
     - main
+
 
 
 
