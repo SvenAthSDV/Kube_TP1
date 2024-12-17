@@ -4,16 +4,20 @@ services:
   - docker:dind  # Docker-in-Docker
 
 stages:
-  - build
+  - build_and_push
 
 variables:
   IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp:latest
 
 Build_And_Push:
-  stage: build
+  stage: build_and_push
   script:
     - echo "Connexion au registre GitLab..."
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+
+    - echo "Clonage du dépôt..."
+    - git clone https://gitlab.com/sdv8290844/myapp.git
+    - cd myapp
 
     - echo "Construction de l'image Docker..."
     - docker build -t $IMAGE_NAME .
@@ -25,7 +29,7 @@ Build_And_Push:
     - docker push $IMAGE_NAME
   only:
     - main
-    
+
 
 
 
