@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: db-namespace
+data:
+  POSTGRES_DB: "messages"
+  POSTGRES_USER: "appcrud"

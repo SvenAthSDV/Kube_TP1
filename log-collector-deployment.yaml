@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-collector
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-collector
+  template:
+    metadata:
+      labels:
+        app: log-collector
+    spec:
+      containers:
+      - name: log-collector
+        image: fluentd:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 24224
+        volumeMounts:
+        - name: log-volume
+          mountPath: /var/log/app
+      volumes:
+      - name: log-volume
+        emptyDir: {}
