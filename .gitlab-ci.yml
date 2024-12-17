@@ -18,8 +18,8 @@ Initialisation:
   script:
     - git clone https://gitlab.com/sdv8290844/myapp.git
     - cd myapp
-    - docker build -t myapp:latest
+    - docker build -t myapp:latest .
     - docker images 
-    
+
 
 
