@@ -1,45 +1,30 @@
 stages:
   - build
 
-variables:
-  GIT_REPO_URL: "https://oauth2:${GITLAB_TOKEN}@gitlab.com/sdv8290844/myapp.git"
-  CLONE_DIR: "/app/repo"
-
 build:
   stage: build
-  image: ubuntu:latest  # Utilise l'image Ubuntu officielle
+  image: ubuntu:latest
   before_script:
+    # Mise à jour et installation des dépendances
     - apt-get update && apt-get install -y git curl ca-certificates lsb-release gnupg
-  script:
-    - echo "Cloning repository from ${GIT_REPO_URL}..."
-    - mkdir -p ${CLONE_DIR}
-    - git clone ${GIT_REPO_URL} ${CLONE_DIR}
-    
-    # Installation de Docker CLI
-    - echo "Adding Docker repository and installing Docker CLI..."
+
+    # Ajout de la clé GPG de Docker et configuration du dépôt
     - install -m 0755 -d /etc/apt/keyrings
     - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
     - chmod a+r /etc/apt/keyrings/docker.gpg
     - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
-    - apt-get update && apt-get install -y docker-ce-cli
 
-    - echo "Docker CLI installed successfully."
+    # Installation complète de Docker Engine
+    - apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io
 
-    # Vérification de Docker CLI
+    # Démarrage du démon Docker
+    - dockerd &  # Démarre Docker Daemon en arrière-plan
+    - sleep 10   # Temps pour s'assurer que Docker est prêt
+
+  script:
+    # Vérification de Docker
     - docker --version
-    - dockerd &   # Lance Docker Daemon en arrière-plan
-    - sleep 10    # Attend que le démon démarre
-
-    # Vérification du démon Docker
     - docker info
 
-    # Build de l'image
-    - echo "Building Docker image..."
+    # Construction de l'image
     - docker build -t myapp:latest .
-    - docker images 
-
-
-
-  only:
-    - branches
-    - tags
