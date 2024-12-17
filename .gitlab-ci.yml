@@ -4,22 +4,32 @@ services:
   - docker:dind  # Docker-in-Docker service
 
 stages:
+  - verification
   - build
 
 Verif_docker:
-  stage: build
+  stage: verification
   script:
+    - echo "Vérification de Docker..."
     - docker --version
     - docker-compose --version
     - echo "Docker is ready!"
 
 Initialisation:
   stage: build
+  needs:
+    - job: Verif_docker
   script:
+    - echo "Clonage du dépôt..."
     - git clone https://gitlab.com/sdv8290844/myapp.git
     - cd myapp
+
+    - echo "Construction de l'image Docker..."
     - docker build -t myapp:latest .
-    - docker images 
+
+    - echo "Vérification des images Docker..."
+    - docker images
+
 
 
 
