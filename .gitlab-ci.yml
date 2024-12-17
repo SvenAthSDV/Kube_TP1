@@ -15,11 +15,12 @@ Build_And_Push:
     - echo "Connexion au registre GitLab..."
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
 
-    - echo "Clonage du dépôt..."
-    - git clone https://gitlab.com/sdv8290844/myapp.git
-    - cd myapp
+    - echo "Création du contexte de build..."
+    - mkdir build_context
+    - cp -r myapp/* build_context/  # Copie du dossier local 'myapp'
 
     - echo "Construction de l'image Docker..."
+    - cd build_context
     - docker build -t $IMAGE_NAME .
 
     - echo "Vérification des images Docker..."
