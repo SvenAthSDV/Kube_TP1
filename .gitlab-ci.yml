@@ -39,8 +39,12 @@ Push_Image:
   script:
     - echo "Connexion au registre GitLab..."
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - echo "Vérification des images Docker..."
+    - docker images
+    - echo "Retaguage de l'image avec le registre GitLab..."
+    - docker tag myapp:latest $CI_REGISTRY_IMAGE/myapp:latest
     - echo "Poussée de l'image dans le registre GitLab..."
-    - docker push $IMAGE_NAME
+    - docker push $CI_REGISTRY_IMAGE/myapp:latest
   only:
     - main
   needs:
