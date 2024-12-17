@@ -1,42 +1,46 @@
 image: docker:latest
 
 services:
-  - docker:dind  # Docker-in-Docker service
+  - docker:dind  # Docker-in-Docker pour permettre les commandes Docker
 
 stages:
   - build
+  - push
 
-verif_docker:
+variables:
+  IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp:latest  # Chemin complet de l'image
+  DOCKER_HOST: tcp://localhost:2375  # Nécessaire pour Docker-in-Docker
+  DOCKER_TLS_CERTDIR: ""  # Désactive le TLS pour Docker-in-Docker (évite les conflits)
+
+Verif_docker:
   stage: build
   script:
-    - echo "Vérification de Docker..."
     - docker --version
-    - docker-compose --version
-    - echo "Docker is ready!"
+    - echo "Docker est prêt !"
 
-creation de l'image:
+Build_Image:
   stage: build
-  needs:
-    - job: Verif_docker
   script:
-    - echo "Clonage du dépôt..."
-    - git clone https://gitlab.com/sdv8290844/myapp.git
-    - cd myapp
-
-    - echo "Construction de l'image Docker..."
-    - docker build -t myapp:latest .
-
-    - echo "Vérification des images Docker..."
+    - echo "Construction de l'image..."
+    - docker build -t $IMAGE_NAME .
     - docker images
-  needs: 
-    - verif_docker
-
-Push:
-  stage: build
+  only:
+    - main
   needs:
-    - job: creation de l'image
+    - Verif_docker
+
+Push_Image:
+  stage: push
   script:
-    - echo "Push de l'image vers Docker Hub"
+    - echo "Connexion au registre GitLab..."
+    - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - echo "Poussée de l'image dans le registre GitLab..."
+    - docker push $IMAGE_NAME
+  only:
+    - main
+  needs:
+    - Build_Image
+
     
 
 
