@@ -37,8 +37,8 @@ Build_And_Push:
     - docker push $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG
     - echo "Commit de la nouvelle version..."
     - cd ..
-    - git config --global user.email "ci-bot@example.com"
-    - git config --global user.name "GitLab CI Bot"
+    - git config --global user.email "$GITLAB_MAIL"
+    - git config --global user.name "$GITLAB_USER"
     - git checkout main        
     - git add $VERSION_FILE
     - git commit -m "CI/CD Increment version to $VERSION_TAG"
