@@ -41,7 +41,7 @@ Build_And_Push:
     - git config --global user.name "$GITLAB_USER"      
     - git add $VERSION_FILE
     - git commit -m "CI/CD Increment version to $VERSION_TAG"
-    - git push
+    - git push origin HEAD:main
   only:
     - main
 
