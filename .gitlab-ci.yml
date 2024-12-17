@@ -14,7 +14,7 @@ verif_docker:
     - docker-compose --version
     - echo "Docker is ready!"
 
-Initialisation:
+creation de l'image:
   stage: build
   needs:
     - job: Verif_docker
@@ -30,6 +30,14 @@ Initialisation:
     - docker images
   needs: 
     - verif_docker
+
+Push:
+  stage: build
+  needs:
+    - job: creation de l'image
+  script:
+    - echo "Push de l'image vers Docker Hub"
+    
 
 
 
