@@ -36,7 +36,7 @@ build:
     # Build de l'image
     - echo "Building Docker image..."
     - docker build -t myapp:latest .
-    - docker images
+    - docker images 
 
 
 
