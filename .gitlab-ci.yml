@@ -38,11 +38,10 @@ Build_And_Push:
     - echo "Commit de la nouvelle version..."
     - cd ..
     - git config --global user.email "$GITLAB_MAIL"
-    - git config --global user.name "$GITLAB_USER"
-    - git checkout main        
+    - git config --global user.name "$GITLAB_USER"      
     - git add $VERSION_FILE
     - git commit -m "CI/CD Increment version to $VERSION_TAG"
-    - git push origin main
+    - git push
   only:
     - main
 
