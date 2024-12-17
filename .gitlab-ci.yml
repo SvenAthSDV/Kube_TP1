@@ -28,7 +28,8 @@ Initialisation:
 
     - echo "Vérification des images Docker..."
     - docker images
-  needs: verif_docker
+  needs: 
+    - verif_docker
 
 
 
