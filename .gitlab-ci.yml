@@ -3,7 +3,7 @@ stages:
 
 build:
   stage: build
-  image: ubuntu:latest
+  image: ubuntu:22.04
   before_script:
     # Mise à jour et installation des dépendances
     - apt-get update && apt-get install -y git curl ca-certificates lsb-release gnupg
