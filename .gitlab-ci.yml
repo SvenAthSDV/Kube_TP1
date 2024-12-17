@@ -4,11 +4,10 @@ services:
   - docker:dind  # Docker-in-Docker service
 
 stages:
-  - verification
   - build
 
-Verif_docker:
-  stage: verification
+verif_docker:
+  stage: build
   script:
     - echo "Vérification de Docker..."
     - docker --version
@@ -29,7 +28,7 @@ Initialisation:
 
     - echo "Vérification des images Docker..."
     - docker images
-
+  needs: verif_docker
 
 
 
