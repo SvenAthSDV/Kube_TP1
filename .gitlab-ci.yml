@@ -6,12 +6,20 @@ services:
 stages:
   - build
 
-job_name:
+Verif_docker:
   stage: build
   script:
     - docker --version
     - docker-compose --version
     - echo "Docker is ready!"
-    - docker run --rm hello-world
+
+Initialisation:
+  stage: build
+  script:
+    - git clone https://gitlab.com/sdv8290844/myapp.git
+    - cd myapp
+    - docker build -t myapp:latest
+    - docker images 
+    
 
 
