@@ -27,7 +27,7 @@ build:
 
     # Vérification de Docker CLI
     - docker --version
-    - docker build -t myapp:latest
+    - docker build -t myapp:latest .
     - echo "Build process completed successfully!"
   only:
     - branches
