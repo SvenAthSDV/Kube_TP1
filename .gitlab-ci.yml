@@ -1,36 +1,36 @@
 image: docker:latest
 
 services:
-  - docker:dind  # Docker-in-Docker pour permettre les commandes Docker
+  - docker:dind  # Docker-in-Docker service
 
 stages:
   - build
-  - push
-
-variables:
-  IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp:latest  # Chemin complet de l'image
-  DOCKER_HOST: tcp://localhost:2375  # Nécessaire pour Docker-in-Docker
-  DOCKER_TLS_CERTDIR: ""  # Désactive le TLS pour Docker-in-Docker (évite les conflits)
 
 Verif_docker:
   stage: build
   script:
+    - echo "Vérification de Docker..."
     - docker --version
-    - echo "Docker est prêt !"
+    - docker-compose --version
+    - echo "Docker is ready!"
 
-Build_Image:
+Initialisation:
   stage: build
-  script:
-    - echo "Construction de l'image..."
-    - docker build -t $IMAGE_NAME .
-    - docker images
-  only:
-    - main
   needs:
     - Verif_docker
+  script:
+    - echo "Clonage du dépôt..."
+    - git clone https://gitlab.com/sdv8290844/myapp.git
+    - cd myapp
+
+    - echo "Construction de l'image Docker..."
+    - docker build -t myapp:latest .
+
+    - echo "Vérification des images Docker..."
+    - docker images
 
 Push_Image:
-  stage: push
+  stage: build
   script:
     - echo "Connexion au registre GitLab..."
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
@@ -39,7 +39,7 @@ Push_Image:
   only:
     - main
   needs:
-    - Build_Image
+    - Initialisation
 
     
 
