@@ -27,8 +27,8 @@ Build_And_Push:
     - echo "Vérification des images Docker..."
     - docker images
 
-  - echo "Poussée de l'image dans le registre GitLab..."
-  - docker push $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG
+    - echo "Poussée de l'image dans le registre GitLab..."
+    - docker push $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG
   only:
     - main
 
