@@ -1,55 +1,30 @@
 image: docker:latest
 
 services:
-  - docker:dind  # Docker-in-Docker service
+  - docker:dind  # Docker-in-Docker
 
 stages:
   - build
 
-
 variables:
-  IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp:latest  # Définition complète de l'image
+  IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp:latest
 
-
-Verif_docker:
-  stage: build
-  script:
-    - echo "Vérification de Docker..."
-    - docker --version
-    - docker-compose --version
-    - echo "Docker is ready!"
-
-Initialisation:
-  stage: build
-  needs:
-    - Verif_docker
-  script:
-    - echo "Clonage du dépôt..."
-    - git clone https://gitlab.com/sdv8290844/myapp.git
-    - cd myapp
-
-    - echo "Construction de l'image Docker..."
-    - docker build -t myapp:latest .
-
-    - echo "Vérification des images Docker..."
-    - docker images
-
-Push_Image:
+Build_And_Push:
   stage: build
   script:
     - echo "Connexion au registre GitLab..."
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+
+    - echo "Construction de l'image Docker..."
+    - docker build -t $IMAGE_NAME .
+
     - echo "Vérification des images Docker..."
     - docker images
-    - echo "Retaguage de l'image avec le registre GitLab..."
-    - docker tag myapp:latest $CI_REGISTRY_IMAGE/myapp:latest
+
     - echo "Poussée de l'image dans le registre GitLab..."
-    - docker push $CI_REGISTRY_IMAGE/myapp:latest
+    - docker push $IMAGE_NAME
   only:
     - main
-  needs:
-    - Initialisation
-
     
 
 
