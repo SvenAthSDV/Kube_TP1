@@ -20,19 +20,19 @@ spec:
         ports:
         - containerPort: 8088
         env:
-        - name: POSTGRES_DB
+        - name: DATABASE_DATABASE
           value: "messages"
-        - name: POSTGRES_USER
+        - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
-              name: postgres-credentials
+              name: myapp-credentials
               key: POSTGRES_USER
-        - name: POSTGRES_PASSWORD
+        - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgres-credentials
+              name: myapp-credentials
               key: POSTGRES_PASSWORD
-        - name: POSTGRES_HOST
+        - name: DATABASE_HOST
           value: "postgres-service.db-namespace.svc.cluster.local"
         resources:
           requests:
