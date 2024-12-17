@@ -27,8 +27,19 @@ build:
 
     # Vérification de Docker CLI
     - docker --version
+    - dockerd &   # Lance Docker Daemon en arrière-plan
+    - sleep 10    # Attend que le démon démarre
+
+    # Vérification du démon Docker
+    - docker info
+
+    # Build de l'image
+    - echo "Building Docker image..."
     - docker build -t myapp:latest .
-    - echo "Build process completed successfully!"
+    - docker images
+
+
+
   only:
     - branches
     - tags
