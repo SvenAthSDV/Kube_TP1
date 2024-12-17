@@ -1,33 +1,24 @@
 stages:
   - build
-  - deploy
 
 variables:
-  IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
-  KUBECONFIG_FILE: $CI_PROJECT_DIR/kubeconfig.yaml
-
-before_script:
-  - echo "$KUBE_CONFIG" | base64 -d > $KUBECONFIG_FILE
-  - export KUBECONFIG=$KUBECONFIG_FILE
+  GIT_REPO_URL: "https://gitlab.com/sdv8290844/myapp.git"
+  CLONE_DIR: "/app/repo"
 
 build:
   stage: build
+  image: ubuntu:latest  # Utilisation de l'image Ubuntu officielle
+  before_script:
+    - apt-get update && apt-get install -y git  # Installation de Git
   script:
-    - echo "Authenticating to GitLab Container Registry..."
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - echo "Building Docker image..."
-    - docker build -t $IMAGE_NAME .
-    - echo "Pushing Docker image to GitLab Container Registry..."
-    - docker push $IMAGE_NAME
+    - echo "Cloning repository from ${GIT_REPO_URL}..."
+    - mkdir -p ${CLONE_DIR}
+    - git clone ${GIT_REPO_URL} ${CLONE_DIR}
+
+    - echo "Listing files from the cloned repository:"
+    - ls -la ${CLONE_DIR}
+
+    - echo "Build simulation completed."
   only:
     - branches
-    - tags
-
-deploy:
-  stage: deploy
-  script:
-    - echo "Deploying to Kubernetes cluster..."
-    - kubectl apply -f k8s/web-server-deployment.yaml
-    - kubectl apply -f k8s/web-service.yaml
-  only:
     - tags
