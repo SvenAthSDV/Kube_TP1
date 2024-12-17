@@ -1,24 +1,21 @@
 stages:
   - build
 
-docker_setup:
+variables:
+  DOCKER_TLS_CERTDIR: ""  # Désactive TLS pour docker:dind
+
+before_script:
+  - apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - apt-get update && apt-get install -y docker-ce-cli docker-compose
+
+job_name:
   stage: build
-  image: ubuntu:22.04
   services:
     - docker:dind
-  variables:
-    DOCKER_DRIVER: vfs  # Temporaire pour contourner le problème
   script:
-    - apt-get update && apt-get install -y docker.io
-    - dockerd --storage-driver=vfs &
-    - sleep 10
     - docker --version
     - docker info
+    - echo "Docker command is now available!"
 
-  script:
-    # Vérification de Docker
-    - docker --version
-    - docker info
-
-    # Construction de l'image
-    - docker build -t myapp:latest .
