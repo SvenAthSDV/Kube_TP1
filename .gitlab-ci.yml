@@ -7,7 +7,7 @@ stages:
   - build_and_push
 
 variables:
-  IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp:latest
+  IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp
 
 Build_And_Push:
   stage: build_and_push
@@ -19,15 +19,19 @@ Build_And_Push:
     - mkdir build_context
     - cp -r myapp/* build_context/  # Copie du dossier local 'myapp'
 
+    # Génération du tag de version (v1, v2, etc.)
+    - VERSION_TAG="v$(($(docker images | grep -c $IMAGE_NAME) + 1))"
+    - echo "Tag de version généré : $VERSION_TAG"
+
     - echo "Construction de l'image Docker..."
     - cd build_context
-    - docker build -t $IMAGE_NAME .
+    - docker build -t $IMAGE_NAME:$VERSION_TAG .
 
     - echo "Vérification des images Docker..."
     - docker images
 
     - echo "Poussée de l'image dans le registre GitLab..."
-    - docker push $IMAGE_NAME
+    - docker push $IMAGE_NAME:$VERSION_TAG
   only:
     - main
 
