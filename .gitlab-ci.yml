@@ -6,6 +6,11 @@ services:
 stages:
   - build
 
+
+variables:
+  IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp:latest  # Définition complète de l'image
+
+
 Verif_docker:
   stage: build
   script:
