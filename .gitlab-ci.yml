@@ -16,13 +16,12 @@ Build_And_Push:
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
 
     - echo "Création du contexte de build..."
-    - mkdir build_context
-    - cp -r myapp/* build_context/  # Copie du dossier local 'myapp'
+    - mkdir -p build_context
+    - cp -r myapp/* build_context/
 
-    - |
-      # Génération du tag de version (v1, v2, etc.)
-      VERSION_TAG="v$(($(docker images | grep -c $IMAGE_NAME) + 1))"
-      echo "Tag de version généré : $VERSION_TAG"
+    # Utilisation d'un tag incrémenté basé sur l'horodatage
+    - VERSION_TAG="v$(date +%s)"  # Génère un tag unique basé sur le timestamp
+    - echo "Tag de version généré : $VERSION_TAG"
 
     - echo "Construction de l'image Docker..."
     - cd build_context
@@ -35,6 +34,7 @@ Build_And_Push:
     - docker push $IMAGE_NAME:$VERSION_TAG
   only:
     - main
+
 
 
 
