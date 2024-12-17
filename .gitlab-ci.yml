@@ -2,7 +2,7 @@ stages:
   - build
 
 docker_setup:
-  stage: test
+  stage: build
   image: ubuntu:22.04
   services:
     - docker:dind
