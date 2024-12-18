@@ -30,9 +30,10 @@ Build_And_Push:
 
     - echo "Poussée de l'image dans le registre GitLab..."
     - docker push $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG
-
+    - echo "OKKKKKKKKK" 
   only:
     - tags
+    - main
 
 
 
