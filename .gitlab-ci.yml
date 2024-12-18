@@ -15,23 +15,25 @@ Build_And_Push:
     - echo "Connexion au registre GitLab..."
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
 
-    - echo "Utilisation de la variable prédéfinie pour la version..."
-    - VERSION_TAG="v$CI_PIPELINE_ID"
-    - echo "Tag de version généré $VERSION_TAG"
+    - echo "Utilisation du tag Git pour la version..."
+    - if [ -z "$CI_COMMIT_TAG" ]; then echo "Erreur : Pas de tag Git défini"; exit 1; fi
+    - VERSION_TAG="$CI_COMMIT_TAG"
+    - echo "Tag de version : $VERSION_TAG"
 
     - echo "Création du contexte de build..."
     - mkdir -p build_context
     - cp -r myapp/* build_context/
-    
+
     - echo "Construction de l'image Docker..."
     - cd build_context
     - docker build -t $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG .
-    
+
     - echo "Poussée de l'image dans le registre GitLab..."
     - docker push $CI_REGISTRY_IMAGE/myapp:$VERSION_TAG
 
   only:
-    - main
+    - tags
+
 
 
 
