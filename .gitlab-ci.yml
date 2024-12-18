@@ -6,6 +6,7 @@ services:
 stages:
   - build
 
+
 variables:
   IMAGE_NAME: $CI_REGISTRY_IMAGE/myapp
 
@@ -33,7 +34,21 @@ Build:
   only:
     - tags
   
+Deploy:
+  stage: deploy
+  image: bitnami/kubectl:latest  # Image contenant `kubectl`
+  script:
+    - echo "Connexion à Kubernetes avec l'agent GitLab..."
+    - mkdir -p ~/.kube
+    - echo "$KUBECONFIG_CONTENT" > $KUBE_CONFIG_PATH  # Assurez-vous que `KUBECONFIG_CONTENT` est défini dans les variables de CI/CD
 
+    - echo "Déploiement des fichiers YAML dans le cluster Kubernetes..."
+    - kubectl apply -f k8s
+    - echo "Vérification des pods déployés..."
+    - kubectl get pods -n db-namespace
+    - kubectl get pods -n default
+  only:
+    - tags
 
 
 
